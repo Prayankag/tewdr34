@@ -1,0 +1,2 @@
+rgname="TerrraformLearning"
+location="WestUs"

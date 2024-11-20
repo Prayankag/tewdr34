@@ -1,0 +1,57 @@
+name: AWS EC2 Instance Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Choose action: start, stop, or status"
+        required: true
+        default: "status"
+        type: string
+      instance_id:
+        description: "AWS EC2 Instance ID"
+        required: true
+        type: string
+
+jobs:
+  manage-instance:
+    name: Manage EC2 Instance
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: 
+        aws-secret-access-key: 
+        aws-region: us-east-1
+
+    - name: Execute EC2 Action
+      id: ec2-action
+      run: |
+        case "" in
+          start)
+            echo "Starting instance "
+            aws ec2 start-instances --instance-ids 
+            ;;
+          stop)
+            echo "Stopping instance "
+            aws ec2 stop-instances --instance-ids 
+            ;;
+          status)
+            echo "Fetching status for instance "
+            aws ec2 describe-instance-status --instance-ids 
+            ;;
+          *)
+            echo "Invalid action: "
+            exit 1
+            ;;
+        esac
+
+    - name: Output EC2 Status
+      if: steps.ec2-action.outcome == 'success'
+      run: echo "Action  completed successfully."
+

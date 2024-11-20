@@ -1,0 +1,70 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "prayanka.gochipatula@valuemomentum.com"
+          git config --global user.name "prayankag"
+        env:
+          CI: true
+
+      - name: Installing Dependencies
+        run: |
+          Install-Module -Name AWSPowerShell -Force -AllowClobber
+          npm install -g openapi-to-postmanv2
+
+          # Add more commands to install other dependencies specific to your project
+
+      - name: Generate Postman collection from OpenAPI file
+        run: |
+          openapi2postmanv2 -s openapi.yaml -o postman_collection.json
+          
+      - name: Commit Postman collection to GitHub repository
+        run: |
+          git pull
+          git add postman_collection.json
+          git commit -m "Add Postman collection"
+          git push
+        env:
+          GH_PAT: 
+
+      - name: API Specification Validation (Spectral)
+        run: |
+          # Install Spectral if not already installed
+          npm install -g @stoplight/spectral
+
+          # Run Spectral
+          spectral lint --ruleset spectral.yml openapi.yaml
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id 
+          aws configure set aws_secret_access_key 
+          aws configure set aws_session_token 
+          aws configure set region us-east-1
+
+      - name: Run PowerShell script
+        run: |
+          # Run your PowerShell script
+          Import-Module -Name AWSPowerShell
+          .\AWS-APILIFECYCLE2.ps1
+        env:
+          AWS_ACCESS_KEY_ID: 
+          AWS_SECRET_ACCESS_KEY: 
+          AWS_SESSION_TOKEN: 
+          AWS_DEFAULT_REGION: us-east-1

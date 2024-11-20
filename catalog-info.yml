@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "aws234"
+  annotations:
+    github.com/project-slug: prayankag/aws-ec2 # Change the value to your github repo which contains terraform code.
+    backstage.io/techdocs-ref: dir:.
+  title: 'For resource Automation' # you can give any title
+  description: An example of a resource Creation. # Change Description accordingly
+spec:
+  type: service
+  owner: user:prayankag
+  lifecycle: experimental
